@@ -32,7 +32,15 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   _buildHealthScore(),
                   _buildBudgetPreview(context, state),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
+                  SectionHeader(
+                    title: 'Mục tiêu tiết kiệm',
+                    actionLabel: 'Tất cả',
+                    onAction: () => state.setTab(3),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildSavingsPreview(context, state),
+                  const SizedBox(height: 12),
                   SectionHeader(
                     title: 'Giao dịch gần đây',
                     actionLabel: 'Xem tất cả',
@@ -94,14 +102,8 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildHealthScore() {
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         children: [
           Row(
@@ -144,14 +146,8 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildBudgetPreview(BuildContext context, AppState state) {
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         children: [
           SectionHeader(
@@ -189,14 +185,61 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentTransactions(AppState state) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+  Widget _buildSavingsPreview(BuildContext context, AppState state) {
+    if (state.savingsGoals.isEmpty) return const SizedBox();
+    
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: state.savingsGoals.take(3).map((g) {
+          return AppCard(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(14),
+            child: SizedBox(
+              width: 180,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(g.emoji, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(g.name, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(formatVND(g.savedAmount), style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800)),
+                      Text('${(g.percentage * 100).toInt()}%', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: g.statusColor)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(99),
+                    child: LinearProgressIndicator(
+                      value: g.percentage,
+                      minHeight: 6,
+                      backgroundColor: AppColors.chipBg,
+                      valueColor: AlwaysStoppedAnimation(g.statusColor),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
+    );
+  }
+
+  Widget _buildRecentTransactions(AppState state) {
+    return AppCard(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       child: Column(
         children: state.recentTransactions.map((t) {
           final isLast = t == state.recentTransactions.last;
@@ -212,13 +255,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildMonthlyChart(AppState state) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

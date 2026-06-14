@@ -240,15 +240,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           children: suggestions.map((s) => Expanded(
             child: GestureDetector(
               onTap: () => _applySuggestion(s),
-              child: Container(
+              child: AppCard(
                 margin: EdgeInsets.only(right: s == suggestions.last ? 0 : 8),
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2))],
-                ),
+                borderRadius: 16,
                 child: Column(
                   children: [
                     Text(s['emoji'].toString(), style: const TextStyle(fontSize: 28)),
@@ -281,15 +276,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           child: Row(
             children: habits.map((h) => GestureDetector(
               onTap: () => _applySuggestion(h),
-              child: Container(
+              child: AppCard(
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2))],
-                ),
+                borderRadius: 16,
                 child: Row(
                   children: [
                     Container(
@@ -317,13 +307,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Widget _buildForm() {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))],
-      ),
+      borderRadius: 24,
+      borderColor: Colors.transparent, // Form doesn't need border, just shadow
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

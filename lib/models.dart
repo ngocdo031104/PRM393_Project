@@ -74,6 +74,34 @@ class Budget {
   }
 }
 
+class SavingsGoal {
+  final String id;
+  final String name;
+  final String emoji;
+  final double targetAmount;
+  final double savedAmount;
+  final DateTime deadline;
+
+  SavingsGoal({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.targetAmount,
+    required this.savedAmount,
+    required this.deadline,
+  });
+
+  double get percentage => (savedAmount / targetAmount).clamp(0, 1);
+  double get remainingAmount => targetAmount - savedAmount;
+  bool get isCompleted => savedAmount >= targetAmount;
+
+  Color get statusColor {
+    if (isCompleted) return const Color(0xFF10B981); // Success green
+    if (percentage >= 0.5) return const Color(0xFF3B82F6); // Blue
+    return const Color(0xFFF59E0B); // Amber
+  }
+}
+
 class Category {
   final String name;
   final String emoji;

@@ -6,8 +6,10 @@ import 'app_state.dart';
 import 'dashboard_screen.dart';
 import 'transactions_screen.dart';
 import 'budget_screen.dart';
+import 'savings_screen.dart';
 import 'add_transaction_screen.dart';
 import 'profile_screen.dart';
+import 'login_screen.dart';
 
 void main() {
   runApp(
@@ -29,7 +31,15 @@ class FinancialApp extends StatelessWidget {
       title: 'Quản lý Tài chính',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const MainScreen(),
+      home: Consumer<AppState>(
+        builder: (context, state, child) {
+          if (state.isLoggedIn) {
+            return const MainScreen();
+          } else {
+            return const LoginScreen();
+          }
+        },
+      ),
     );
   }
 }
@@ -46,8 +56,8 @@ class _MainScreenState extends State<MainScreen> {
     DashboardScreen(),
     TransactionsScreen(),
     BudgetScreen(),
-    Center(child: Text('Báo cáo')), // Placeholder for a 4th tab if needed
-    const ProfileScreen(),
+    SavingsScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -86,48 +96,37 @@ class _MainScreenState extends State<MainScreen> {
           child: const Icon(Icons.add, color: Colors.white, size: 32),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.space_dashboard_rounded, 'Tổng quan', 0, state),
-            _buildNavItem(Icons.receipt_long_rounded, 'Giao dịch', 1, state),
-            const SizedBox(width: 48), // Space for FAB
-            _buildNavItem(Icons.pie_chart_rounded, 'Ngân sách', 2, state),
-            _buildNavItem(Icons.person_rounded, 'Cá nhân', 4, state),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index, AppState state) {
-    final isSelected = state.currentTab == index;
-    return InkWell(
-      onTap: () => state.setTab(index),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: state.currentTab,
+        onDestinationSelected: (index) => state.setTab(index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.space_dashboard_outlined),
+            selectedIcon: Icon(Icons.space_dashboard_rounded),
+            label: 'Tổng quan',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long_rounded),
+            label: 'Giao dịch',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.pie_chart_outline_rounded),
+            selectedIcon: Icon(Icons.pie_chart_rounded),
+            label: 'Ngân sách',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.savings_outlined),
+            selectedIcon: Icon(Icons.savings_rounded),
+            label: 'Mục tiêu',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Cá nhân',
+          ),
+        ],
       ),
     );
   }

@@ -121,13 +121,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(entry.key, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: .5)),
                   ),
-                  Container(
+                  AppCard(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.border),
-                    ),
                     child: Column(
                       children: entry.value.asMap().entries.map((e) => Column(
                         children: [

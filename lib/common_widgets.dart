@@ -8,6 +8,47 @@ final _vnd = NumberFormat('#,###', 'vi_VN');
 
 String formatVND(double amount) => '${_vnd.format(amount.toInt())} ₫';
 
+// ── Common Card ──────────────────────────────────────────
+class AppCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final Color? color;
+  final Color? borderColor;
+  final double borderWidth;
+  final double borderRadius;
+  final bool hasShadow;
+
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.margin,
+    this.color,
+    this.borderColor,
+    this.borderWidth = 1.0,
+    this.borderRadius = 20.0,
+    this.hasShadow = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: margin,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: color ?? AppColors.surface,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: borderColor ?? AppColors.border, width: borderWidth),
+        boxShadow: hasShadow
+            ? [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]
+            : null,
+      ),
+      child: child,
+    );
+  }
+}
+
 // ── Section header ────────────────────────────────────────
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -159,14 +200,12 @@ class BudgetProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: budget.isDanger ? AppColors.error.withOpacity(0.02) : AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: budget.isDanger ? AppColors.error.withOpacity(0.5) : AppColors.border, width: budget.isDanger ? 1.5 : 1),
-      ),
+      color: budget.isDanger ? AppColors.error.withOpacity(0.02) : AppColors.surface,
+      borderColor: budget.isDanger ? AppColors.error.withOpacity(0.5) : AppColors.border,
+      borderWidth: budget.isDanger ? 1.5 : 1,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -251,13 +290,10 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
+      borderRadius: 16,
+      hasShadow: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

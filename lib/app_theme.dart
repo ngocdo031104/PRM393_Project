@@ -47,12 +47,29 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surface,
         elevation: 0,
+        centerTitle: true,
         titleTextStyle: GoogleFonts.plusJakartaSans(
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.primary.withOpacity(0.12),
+        labelTextStyle: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary);
+          }
+          return GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.normal, color: AppColors.textSecondary);
+        }),
+        iconTheme: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return const IconThemeData(color: AppColors.primary, size: 24);
+          }
+          return const IconThemeData(color: AppColors.textSecondary, size: 24);
+        }),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,

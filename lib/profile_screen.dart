@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'app_state.dart';
+import 'common_widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -12,7 +13,6 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Cá nhân'),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -25,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildProfileHeader(),
+            _buildProfileHeader(context),
             const SizedBox(height: 24),
             _buildSectionHeader('Tài khoản'),
             _buildListTile(
@@ -76,7 +76,9 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Center(
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<AppState>().signOut();
+                },
                 icon: const Icon(Icons.logout, color: AppColors.error),
                 label: const Text(
                   'Đăng xuất',
@@ -91,29 +93,30 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Container(
+  Widget _buildProfileHeader(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final userName = appState.userName;
+    final userEmail = appState.userEmail;
+    final photoUrl = appState.userPhotoUrl;
+
+    return AppCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 36,
             backgroundColor: AppColors.primary.withOpacity(0.1),
-            child: const Icon(Icons.person, size: 40, color: AppColors.primary),
+            backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+            child: photoUrl == null ? const Icon(Icons.person, size: 40, color: AppColors.primary) : null,
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Nguyễn Văn A',
-                  style: TextStyle(
+                Text(
+                  userName,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -121,8 +124,8 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'nguyenvana@example.com',
-                  style: TextStyle(
+                  userEmail,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                   ),
@@ -171,13 +174,10 @@ class ProfileScreen extends StatelessWidget {
     Widget? trailing,
     required VoidCallback onTap,
   }) {
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
+      padding: EdgeInsets.zero,
+      borderRadius: 16,
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),

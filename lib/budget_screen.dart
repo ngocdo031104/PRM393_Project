@@ -78,20 +78,10 @@ class BudgetScreen extends StatelessWidget {
   }
 
   Widget _buildAiTip() {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFBFDBFE), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF3B82F6).withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      borderColor: const Color(0xFFBFDBFE),
+      borderWidth: 1.5,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

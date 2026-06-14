@@ -1,7 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models.dart';
 
 class AppState extends ChangeNotifier {
+  GoogleSignInAccount? _currentUser;
+  GoogleSignInAccount? get currentUser => _currentUser;
+
+  String? _emailUser;
+  
+  bool get isLoggedIn => _currentUser != null || _emailUser != null;
+
+  String get userName {
+    if (_currentUser != null) return _currentUser!.displayName ?? 'Người dùng';
+    if (_emailUser != null) return _emailUser!.split('@').first;
+    return 'Người dùng';
+  }
+
+  String get userEmail {
+    if (_currentUser != null) return _currentUser!.email;
+    if (_emailUser != null) return _emailUser!;
+    return 'Chưa đăng nhập';
+  }
+
+  String? get userPhotoUrl {
+    return _currentUser?.photoUrl;
+  }
+
+  AppState() {
+    _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    await GoogleSignIn.instance.initialize();
+    GoogleSignIn.instance.authenticationEvents.listen((event) {
+      if (event is GoogleSignInAuthenticationEventSignIn) {
+        _currentUser = event.user;
+      } else if (event is GoogleSignInAuthenticationEventSignOut) {
+        _currentUser = null;
+      }
+      notifyListeners();
+    });
+    
+    try {
+      final account = await GoogleSignIn.instance.attemptLightweightAuthentication();
+      if (account != null) {
+        _currentUser = account;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error in silent sign in: $e");
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      await GoogleSignIn.instance.authenticate();
+    } catch (error) {
+      debugPrint("Error signing in with Google: $error");
+    }
+  }
+
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    // Mock login delay
+    await Future.delayed(const Duration(seconds: 1));
+    _emailUser = email;
+    notifyListeners();
+  }
+
+  Future<void> signOut() async {
+    _emailUser = null;
+    await GoogleSignIn.instance.disconnect();
+    notifyListeners();
+  }
+
   int _currentTab = 0;
   int get currentTab => _currentTab;
 
@@ -180,6 +251,35 @@ class AppState extends ChangeNotifier {
       {'name': 'Grab Bike', 'emoji': '🏍️', 'amount': '25000', 'category': 'Di chuyển', 'usedCount': 28},
       {'name': 'Circle K', 'emoji': '🛒', 'amount': '40000', 'category': 'Mua sắm', 'usedCount': 18},
     ];
+  }
+
+  final List<SavingsGoal> _savingsGoals = [
+    SavingsGoal(id: 's1', name: 'Du lịch Nhật Bản', emoji: '🇯🇵', targetAmount: 50000000, savedAmount: 15000000, deadline: DateTime(2026, 12, 31)),
+    SavingsGoal(id: 's2', name: 'Quỹ dự phòng', emoji: '🛡️', targetAmount: 100000000, savedAmount: 45000000, deadline: DateTime(2027, 6, 30)),
+    SavingsGoal(id: 's3', name: 'Macbook mới', emoji: '💻', targetAmount: 40000000, savedAmount: 38000000, deadline: DateTime(2026, 9, 30)),
+  ];
+
+  List<SavingsGoal> get savingsGoals => List.unmodifiable(_savingsGoals);
+
+  void addSavingsGoal(SavingsGoal goal) {
+    _savingsGoals.add(goal);
+    notifyListeners();
+  }
+
+  void addFundsToGoal(String goalId, double amount) {
+    final index = _savingsGoals.indexWhere((g) => g.id == goalId);
+    if (index != -1) {
+      final oldGoal = _savingsGoals[index];
+      _savingsGoals[index] = SavingsGoal(
+        id: oldGoal.id,
+        name: oldGoal.name,
+        emoji: oldGoal.emoji,
+        targetAmount: oldGoal.targetAmount,
+        savedAmount: oldGoal.savedAmount + amount,
+        deadline: oldGoal.deadline,
+      );
+      notifyListeners();
+    }
   }
 
   final List<Budget> budgets = [
